@@ -3,16 +3,23 @@ import express from 'express';
 const app = express();
 const port = 3000;
 
+app.use(express.json());
+
 const users = ['Alex', 'Bailey', 'Fynn', 'Kiwi'];
+
+app.post('/api/users', (request, response) => {
+  users.push(request.body.name);
+  response.send(`${request.body.name} is added`);
+});
 
 app.delete('/api/users/:name', (request, response) => {
   const name = request.params.name;
-  const isKnown = users.includes(name);
-  if (isKnown) {
-    users.splice(users.indexOf(name), 1);
+  const index = users.indexOf(name);
+  if (index !== -1) {
+    users.splice(index, 1);
     response.send(`${name} is deleted`);
   } else {
-    response.status(404).send('Name is unknown');
+    response.status(404).send('Cannot delete! Name is unknown');
   }
 });
 

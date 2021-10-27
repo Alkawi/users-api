@@ -27,7 +27,7 @@ Content-Type: application/json
     "password": "sicher"
 }
 
-### Login
+### Login Leon
 
 POST http://localhost:3000/api/login HTTP/1.1
 Content-Type: application/json
@@ -37,12 +37,20 @@ Content-Type: application/json
     "password": "asdc"
 }
 
+### Login Anke
+
+POST http://localhost:3000/api/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "anke9000",
+    "password": "ab"
+}
+
 ### Logout
 
 POST http://localhost:3000/api/logout HTTP/1.1
-Content-Type: application/json
 
-{}
 
 ### Get logged in user
 

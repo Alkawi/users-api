@@ -1,9 +1,10 @@
 import express from 'express';
-
+import cookieParser from 'cookie-parser';
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(cookieParser());
 
 const users = [
   {
@@ -28,9 +29,6 @@ const users = [
   },
 ];
 
-const model = {
-  loggedInUser: {},
-};
 /* app.post('/api/login', (request, response) => {
   const credentials = request.body;
   const usernames = users.map((user) => user.username);
@@ -56,20 +54,27 @@ app.post('/api/login', (request, response) => {
   );
 
   if (foundUser) {
-    model.loggedInUser = { name: foundUser.name, username: foundUser.username };
+    response.setHeader('Set-Cookie', `username=${foundUser.username}`);
     response.send(`Hello ${foundUser.name}`);
   } else {
     response.status(401).send('Wrong username or password');
   }
 });
 
-app.post('/api/logout', (request, response) => {
-  model.loggedInUser = request.body;
+app.post('/api/logout', (_request, response) => {
+  response.setHeader('Set-Cookie', `username=`);
   response.send('Logout successful');
 });
 
-app.get('/api/me', (_request, response) => {
-  response.send(model.loggedInUser);
+app.get('/api/me', (request, response) => {
+  const username = request.cookies.username;
+  const foundUser = users.find((user) => user.username === username);
+
+  if (foundUser) {
+    response.send(request.cookies);
+  } else {
+    response.status(404).send('User not found');
+  }
 });
 
 app.post('/api/users', (request, response) => {

@@ -102,11 +102,11 @@ app.post('/api/users', async (request, response) => {
   }
 });
 
-app.delete('/api/users/:username', (request, response) => {
+app.delete('/api/users/:username', async (request, response) => {
   const username = request.params.username;
-  const index = users.map((user) => user.username).indexOf(username);
-  if (index !== -1) {
-    users.splice(index, 1);
+  const document = await getUserCollection().findOne({ username });
+  if (document !== null) {
+    getUserCollection().deleteOne({ username });
     response.send(`${username} is deleted`);
   } else {
     response.status(404).send('Cannot delete! Name is unknown');

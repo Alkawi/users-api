@@ -2,7 +2,7 @@ DELETE http://localhost:3000/api/users/Alex HTTP/1.1
 
 ###
 
-DELETE http://localhost:3000/api/users/lmachens
+DELETE http://localhost:3000/api/users/ronaldo
 
 ###
 

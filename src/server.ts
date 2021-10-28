@@ -3,7 +3,7 @@ dotenv.config();
 
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import { connectDatabase } from './utils/database';
+import { connectDatabase, getUserCollection } from './utils/database';
 
 if (!process.env.MONGODB_URI) {
   throw new Error('No MongoDB URL dotenv variable');
@@ -17,42 +17,30 @@ app.use(cookieParser());
 
 const users = [
   {
+    _id: 0,
     name: 'Manuel',
     username: 'manuel123',
     password: '123abc',
   },
   {
+    _id: 1,
     name: 'Leon',
     username: 'lmachens',
     password: 'asdc',
   },
   {
+    _id: 2,
     name: 'Anke',
     username: 'anke9000',
     password: 'ab',
   },
   {
+    _id: 3,
     name: 'Philipp',
     username: 'phgrtz',
     password: 'pw123!',
   },
 ];
-
-/* app.post('/api/login', (request, response) => {
-  const credentials = request.body;
-  const usernames = users.map((user) => user.username);
-  const passwords = users.map((user) => user.password);
-  
-  if (usernames.includes(credentials.username)) {
-    if (passwords.includes(credentials.password)) {
-      response.send('Login successfully');
-    } else {
-      response.status(401).send('Wrong password');
-    }
-  } else {
-    response.status(404).send('Wrong username');
-  }
-}); */
 
 app.post('/api/login', (request, response) => {
   const credentials = request.body;
@@ -85,7 +73,7 @@ app.get('/api/me', (request, response) => {
     response.status(404).send('User not found');
   }
 });
-
+/*
 app.post('/api/users', (request, response) => {
   const usernames = users.map((user) => user.username);
   const newUser = request.body;
@@ -94,6 +82,23 @@ app.post('/api/users', (request, response) => {
   } else {
     users.push(newUser);
     response.send(`${newUser.username} is added`);
+  }
+});
+*/
+
+app.post('/api/users', async (request, response) => {
+  const newUser = request.body;
+  const existingUser = await getUserCollection().findOne({
+    username: newUser.username,
+  });
+
+  if (existingUser) {
+    response.status(409).send(`${newUser.username} already exists`);
+  } else {
+    const returnedObject = await getUserCollection().insertOne(newUser);
+    response.send(
+      `Supi, ${newUser.username} was added with id ${returnedObject.insertedId}!`
+    );
   }
 });
 
@@ -108,8 +113,10 @@ app.delete('/api/users/:username', (request, response) => {
   }
 });
 
-app.get('/api/users/:username', (request, response) => {
-  const user = users.find((user) => user.username === request.params.username);
+app.get('/api/users/:username', async (request, response) => {
+  const user = await getUserCollection().findOne({
+    username: request.params.username,
+  });
   if (user) {
     response.send(user);
   } else {
@@ -117,8 +124,9 @@ app.get('/api/users/:username', (request, response) => {
   }
 });
 
-app.get('/api/users', (_request, response) => {
-  response.send(users);
+app.get('/api/users', async (_request, response) => {
+  const userDocuments = await getUserCollection().find().toArray();
+  response.send(userDocuments);
 });
 
 app.get('/', (_req, res) => {

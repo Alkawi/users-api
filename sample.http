@@ -10,7 +10,7 @@ DELETE http://localhost:3000/api/users/anke9000
 
 ###
 
-GET http://localhost:3000/api/users/lmachens HTTP/1.1
+GET http://localhost:3000/api/users/whihi HTTP/1.1
 
 ###
 
@@ -22,9 +22,9 @@ POST http://localhost:3000/api/users HTTP/1.1
 Content-Type: application/json
 
 {
-    "name": "Steve",
-    "username": "steven1",
-    "password": "sicher"
+    "name": "harald",
+    "username": "hihi",
+    "password": "geheim"
 }
 
 ### Login Leon
